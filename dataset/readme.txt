@@ -1,0 +1,2 @@
+Download GTSRB dataset from http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset#Downloads and segregate the dataset into three folders for train, test and val.
+You may use the split_folder library to do so.
