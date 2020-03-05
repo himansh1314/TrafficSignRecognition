@@ -6,7 +6,18 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import argparse
 tf.debugging.set_log_device_placement(True)
+
+## Setting up command line arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-n", "--epochs", required = True, help = "The number of epochs for training")
+ap.add_argument("-td", "--train_directory", required = True, help = "Train directory path")
+ap.add_argument("-testd", "--test_directory", required = True, help = "Test directory path")
+#ap.add_argument("-md", "--save_directory", required = True, help = "Directory to save the model file")
+args = vars(ap.parse_args())
+
+
 ## Initialise data generators for training and validation
 train_gen = ImageDataGenerator(rescale = 1./255,
                                rotation_range = 10,
@@ -18,6 +29,7 @@ train_gen = ImageDataGenerator(rescale = 1./255,
                                fill_mode = "nearest",
                                zoom_range = 0.15
                                )
+
 validation_gen = ImageDataGenerator(rescale = 1./255,
                                     rotation_range = 10,
                                     width_shift_range = 0.1,
@@ -46,15 +58,15 @@ model.compile(optimizer = RMSprop(lr=0.001), loss = 'categorical_crossentropy', 
 model.summary()
 
 ## directories
-TRAIN_DIRECTORY = 'dataset/train' 
-VAL_DIRECTORY = 'dataset/val'
+TRAIN_DIRECTORY = args["train_directory"]
+VAL_DIRECTORY = args["test_directory"]
 
 ## data flow from generator
 train_generator = train_gen.flow_from_directory(TRAIN_DIRECTORY, target_size = (32,32), class_mode='categorical')
 validation_generator = validation_gen.flow_from_directory(VAL_DIRECTORY, target_size = (32,32), class_mode='categorical')
 
 ## Train the model
-history = model.fit_generator(train_generator, epochs = 25, validation_data = validation_generator, verbose = 1)
+history = model.fit_generator(train_generator, epochs = int(args["epochs"]), validation_data = validation_generator, verbose = 1)
 
 ## Save the trained model
 model.save('models/model.h5')
@@ -70,6 +82,7 @@ epochs = range(len(acc))
 plt.plot(epochs,acc,'r', "Training accuracy")
 plt.plot(epochs, val_acc, 'b', "Validation accuracy")
 plt.title('Training and Validation Accuracy')
+plt.savefig('plots/accuracy.png')
 plt.figure()
 
 ##Loss
