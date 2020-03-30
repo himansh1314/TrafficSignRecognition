@@ -65,7 +65,7 @@ VAL_DIRECTORY = args["test_directory"]
 train_generator = train_gen.flow_from_directory(TRAIN_DIRECTORY, target_size = (32,32), class_mode='categorical')
 validation_generator = validation_gen.flow_from_directory(VAL_DIRECTORY, target_size = (32,32), class_mode='categorical')
 
-## Train the model
+## Train the model using data generator
 history = model.fit_generator(train_generator, epochs = int(args["epochs"]), validation_data = validation_generator, verbose = 1)
 
 ## Save the trained model
